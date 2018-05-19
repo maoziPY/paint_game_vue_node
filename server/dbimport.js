@@ -1,6 +1,3 @@
-/**
- * Created by Yc on 2016/5/26.
- */
 var db = require('./db');
 var fs = require('fs');
 

@@ -1,6 +1,3 @@
-/**
- * Created by Yc on 2016/5/26.
- */
 var fs = require('fs');
 var db = (function () {
     var file = __dirname+'/db.json';

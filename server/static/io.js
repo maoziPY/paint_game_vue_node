@@ -1,6 +1,3 @@
-/**
- * Created by Yc on 2016/5/22.
- */
 var socket = io.connect();
 socket.on('server msg',function (data) {
     var ele = document.createElement('p');
@@ -37,6 +34,7 @@ socket.on('paint pts',function (pts) {
 socket.on('cmd',function (data) {
     console.log(JSON.parse(data));
 });
+// 上场的用户
 socket.on('reset in users',function (data) {
     data = JSON.parse(data);
     /*
@@ -71,7 +69,7 @@ socket.on('out',function (id) {
         btnIn.outAct();
     }
 });
-
+// 信息栏
 socket.on('mytime',function (data) {
     data = JSON.parse(data);// name,word:,time
     btnIn.disabled = true;
@@ -113,6 +111,7 @@ socket.on('timeout',function (d) {
 socket.on('clear paint',function () {
     ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
 });
+// 排行榜
 socket.on('tops',function (d) {
     d = JSON.parse(d);
     tops.innerHTML = '';

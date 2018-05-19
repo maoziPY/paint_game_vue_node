@@ -1,12 +1,10 @@
-/**
- * Created by Yc on 2016/5/21.
- */
 var httpd = require('http').createServer(handler);
 var io = require('socket.io').listen(httpd);
 var fs = require('fs');
 var db = require('./db');
 httpd.listen(4000);
 
+// 静态文件
 function handler(req,res) {
     fs.readFile(__dirname+'/static/'+(req.url==='/'?'index.html':req.url),
         function (err,data) {
@@ -19,8 +17,6 @@ function handler(req,res) {
         }
     );
 }
-
-
 
 var paths = [];
 var tops = (function () {

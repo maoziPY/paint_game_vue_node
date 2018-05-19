@@ -1,7 +1,3 @@
-/**
- * Created by Yc on 2016/5/17.
- */
-
 var canvas = document.getElementsByTagName('canvas')[0],
     ctx = canvas.getContext('2d'),
     msg = document.getElementById('msg'),
