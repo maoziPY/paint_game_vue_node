@@ -14,6 +14,7 @@ btnIn.inAct = function () {
     this.innerText='下场';
     this.in=true;
 };
+// 初始化上场状态
 btnIn.outAct = function () {
     this.innerText='上场！';
     this.in=false;

@@ -2,7 +2,7 @@ var httpd = require('http').createServer(handler);
 var io = require('socket.io').listen(httpd);
 var fs = require('fs');
 var db = require('./db');
-httpd.listen(4000);
+httpd.listen(4000, ()=>{console.log('Server listening on port 4000\n http:localhost:4000')});
 
 // 静态文件
 function handler(req,res) {
@@ -19,12 +19,15 @@ function handler(req,res) {
 }
 
 var paths = [];
+// 排行榜
 var tops = (function () {
     var _tops = [],idmap={},n=10;
     return {
         set : function (id,name,v) {
-            if(this.isExists(id))
+            if(this.isExists(id)) {
                 this.remove(id);
+            }
+            // 找到第一个比当前参数v版本更低的版本并插入到指定位置，_tops为降序
             var i = _tops.findIndex(x=>{return idmap[x].v<v;});
             i= i===-1 ? _tops.length : i;
             _tops.splice(i,0,id);
@@ -154,11 +157,15 @@ io.sockets.on('connection',function (socket) {
         this.attrin = false;
         this.emit('server msg','欢迎, '+this.name+' !');
         this.broadcast.emit('server msg','欢迎, '+this.name+' !');
+        // paths为空数组，则清空给定矩形内的指定像素
         this.emit('paint paths',JSON.stringify(paths));
+        // 初始化上场的用户列表
         var users = Game.inQueue.map(x=>{return getSocket(x)});
         this.emit('reset in users',JSON.stringify(users));
 
         tops.set(this.id.substring(2),this.name,0);
+
+        // --------可爱的分隔线-------
         var j = JSON.stringify(tops);
         this.emit('tops',j);
         this.broadcast.emit('tops',j);
@@ -179,7 +186,7 @@ io.sockets.on('connection',function (socket) {
                 t.emit('mytime',JSON.stringify({name:t.name,word:t.word.word,time:t.time}));
                 t.broadcast.emit('othertime',JSON.stringify({name:t.name,time:t.time}));
                 Game.timer = setTimeout(function () {
-                    console.log(t.time,t.name);
+                    // console.log(t.time,t.name);
                     if(t.time === 0){
                         delete t.time;
                         delete Game.player;
@@ -209,9 +216,9 @@ io.sockets.on('connection',function (socket) {
             this.broadcast.emit('erase',x,y,w,h);
         });
         this.on('out',function () {
-            console.log('before',Game.inQueue.length);
+            // console.log('before',Game.inQueue.length);
             Game.inQueue.splice(Game.inQueue.findIndex(x=>{x.id===this.id}));
-            console.log('after',Game.inQueue.length);
+            // console.log('after',Game.inQueue.length);
             this.attrin = false;
             this.emit('out',this.id.substring(2));
             this.broadcast.emit('out user',this.id.substring(2));
@@ -282,7 +289,7 @@ io.sockets.on('connection',function (socket) {
         })
         this.on('clear paths',function () {
             if(this === Game.player) {
-                console.log('clear all');
+                // console.log('clear all');
                 paths = [];
                 this.emit('clear paint');
                 this.broadcast.emit('clear paint');

@@ -1,12 +1,15 @@
 var socket = io.connect();
+// 广播消息
 socket.on('server msg',function (data) {
     var ele = document.createElement('p');
     ele.innerHTML = data;
     msg.appendChild(ele);
     msg.scrollTop = msg.scrollHeight;
 })
+// 入口，初始化状态
 socket.on('login',function () {
-    if(prompt)
+    if(!prompt)
+    // if(prompt)
         socket.emit('login',prompt('输入你的姓名'));
     else
         socket.emit('login','手机用户');
@@ -32,7 +35,7 @@ socket.on('paint pts',function (pts) {
     Ctl.drawPts(ctx, pts);
 });
 socket.on('cmd',function (data) {
-    console.log(JSON.parse(data));
+    // console.log(JSON.parse(data));
 });
 // 上场的用户
 socket.on('reset in users',function (data) {
@@ -128,6 +131,7 @@ socket.on('tops',function (d) {
     });
 })
 utils = {
+    // 创建用户上场显示的标签及相应特性
     makeUserP : function (x) {
         var p = document.createElement('p'); p.id = 'p'+x.id;
         p.innerText = x.name;
