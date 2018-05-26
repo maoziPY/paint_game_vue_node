@@ -165,7 +165,6 @@ io.sockets.on('connection',function (socket) {
 
         tops.set(this.id.substring(2),this.name,0);
 
-        // --------可爱的分隔线-------
         var j = JSON.stringify(tops);
         this.emit('tops',j);
         this.broadcast.emit('tops',j);
@@ -193,6 +192,7 @@ io.sockets.on('connection',function (socket) {
                         delete t.attrin;
                         paths=[];
                         Game.inQueue.shift();
+                        // 自动上场，Game.inQueue.length==0时，return 掉
                         setTimeout(Game.run,4000);
                         t.emit('mytimeout',t.id.substring(2));
                         t.broadcast.emit('timeout',JSON.stringify({id:t.id.substring(2),word:t.word.word}));
@@ -208,8 +208,8 @@ io.sockets.on('connection',function (socket) {
                     t.emit('update my time',o);
                     t.broadcast.emit('update time',o);
                     Game.timer = setTimeout(arguments.callee,1000);
-                },1000);
-            },4000);
+                },4000);
+            },2000);
         });
         this.on('erase',function (x,y,w,h) {
             paths.push({tag:'erase',x:x,y:y,w:w,h:h});

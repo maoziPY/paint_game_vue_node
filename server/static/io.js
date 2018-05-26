@@ -53,6 +53,7 @@ socket.on('reset in users',function (data) {
 socket.on('erase',function (x,y,w,h) {
     new Rect(x,y,w,h).clearOn(ctx);
 })
+// 广播通知有用户上场
 socket.on('new in user',function (data) {
     users.appendChild(utils.makeUserP(JSON.parse(data)));
 });
@@ -60,6 +61,7 @@ socket.on('out user',function (id) {
     var x = users.querySelector('#p'+id);
     if(x) x.outerHTML='';
 })
+// 显示自己已上场
 socket.on('in',function (data) {
     users.appendChild(utils.makeUserP(JSON.parse(data)));
     users.scrollTop = users.scrollHeight;
@@ -81,22 +83,26 @@ socket.on('mytime',function (data) {
     info.word.innerText = data.word;
     canvas.isMe = true;
 });
+// 广播信息栏
 socket.on('othertime',function (data) {
     data = JSON.parse(data);// name,word:,time
     info.player.innerText = data.name;
     info.time.innerText = data.time +'s';
     canvas.isMe = false;
 });
+// 广播倒计时及更新提示信息
 socket.on('update time',function (data) {
     data = JSON.parse(data);
     info.player.innerText = data.name;
     info.time.innerText = data.time +'s';
     info.word.innerText = data.word;
 });
+// 倒计时
 socket.on('update my time',function (data) {
     data = JSON.parse(data);
     info.time.innerText = data.time +'s';
 });
+// 时间到
 socket.on('mytimeout',function (id) {
     var t = users.querySelector('#p'+id);
     if(t) t.outerHTML='';
@@ -104,6 +110,7 @@ socket.on('mytimeout',function (id) {
     canvas.isMe = false;
     btnIn.outAct();
 });
+// 广播时间到，公布答案
 socket.on('timeout',function (d) {
     d = JSON.parse(d);
     var t = users.querySelector('#p'+d.id);
@@ -111,6 +118,7 @@ socket.on('timeout',function (d) {
     info.time.innerText = '时间到了！';
     info.word.innerText = '正确答案为：'+d.word;
 });
+// 清空画布
 socket.on('clear paint',function () {
     ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
 });

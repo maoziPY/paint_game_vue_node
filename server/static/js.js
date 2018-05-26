@@ -10,11 +10,12 @@ var input = document.getElementById('input-msg'),
     btnAutoin = document.getElementById('btn-autoin'),
     info = document.getElementById('info'),
     tops = document.getElementById('tops');
+// 初始化已上场状态
 btnIn.inAct = function () {
     this.innerText='下场';
     this.in=true;
 };
-// 初始化上场状态
+// 初始化待上场状态
 btnIn.outAct = function () {
     this.innerText='上场！';
     this.in=false;
@@ -25,12 +26,15 @@ tops.template = tops.querySelector('[role=template]').cloneNode(true);
 info.time = info.querySelector('#time')
 info.player = info.querySelector('#player')
 info.word = info.querySelector('#word')
+// 自动上场
 btnAutoin.addEventListener('click',function (e) {
     var btnin = btnIn;
     if(btnin.autoIn == null){
         // btnin.outAct();
         if(!btnin.in) socket.emit('in');
+        // 5少轮循，检查自动上场
         btnin.autoIn = setInterval(function () {
+            // 上场后，isMe=true，btnin.in=true
             if(canvas.isMe) return;
             if(!btnin.in) socket.emit('in');
         },5000);
@@ -40,6 +44,7 @@ btnAutoin.addEventListener('click',function (e) {
     }
     this.classList.toggle('on');
 });
+// 上场
 btnIn.addEventListener('click',function () {
     var t = this.in;
     if(this.t) clearTimeout(this.t);
@@ -48,6 +53,7 @@ btnIn.addEventListener('click',function () {
     },400);
 })
 
+//-------------------- 可爱的分隔线------------------
 window.onload = function () {
     Ctl.init();
     function resize() {
