@@ -53,9 +53,9 @@ btnIn.addEventListener('click',function () {
     },400);
 })
 
-//-------------------- 可爱的分隔线------------------
 window.onload = function () {
     Ctl.init();
+    // 改变窗口大小时，重新绘制
     function resize() {
         canvas.width = canvas.parentElement.clientWidth;
         canvas.paths = canvas.pts = [];
@@ -63,6 +63,7 @@ window.onload = function () {
     }
     this.addEventListener('resize',resize);
     resize();
+    // 消息框信息事件监听
     input.onkeydown = function (e) {
         if(e.keyCode === 13 && this.value!=''){
             if(canvas.isMe){
@@ -73,8 +74,11 @@ window.onload = function () {
             this.value = '';
         }
     }
+    // 画笔、橡皮擦、清空、下载，这几个按钮的点击事件
     document.querySelector('#btns').addEventListener('click',function (e) {
+        // 画笔或橡皮擦
         if(e.target.classList.contains('btn-active-able')){
+            // 由prevBtn判断是否有active的元素，有则去除
             if(this.prevBtn){
                 this.prevBtn.classList.remove('active')
             }
@@ -84,6 +88,7 @@ window.onload = function () {
     },true);
 }
 
+// 绘制中
 canvas.addEventListener('mousemove',function (e) {
     var w=20,h=20;
     if(canvas.isMe){
@@ -102,6 +107,7 @@ canvas.addEventListener('mousemove',function (e) {
     }
 });
 
+// 绘制结束
 canvas.addEventListener('mouseup',function (e) {
     if(!canvas.isMe || this.erase) return;
     var x = e.offsetX,y = e.offsetY;
@@ -112,8 +118,10 @@ canvas.addEventListener('mouseup',function (e) {
 
 })
 
+// 开始绘制
 canvas.addEventListener('mousedown',function (e) {
     if(!this.isMe) return;
+    //-------------------- 可爱的分隔线------------------
     if(this.erase){
         var w=20,h=20;
         var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
@@ -139,8 +147,28 @@ ranger.addEventListener('change',function (e) {
     Ctl.setLw(this.value);
 });
 
-// Controller
+/**
+ * [Ctl Controller]
+ *
+ * pts=points，有对应的x、y属性
+ *
+ * canvas相关：
+ * ctx.save() ==> 保存当前环境的状态，save之后，可以调用Canvas的平移、放缩、旋转、错切、裁剪等操作
+ * ctx.beginPath() ==> 起始一条路径，或重置当前路径
+ * ctx.moveTo() ==> 把路径移动到画布中的指定点，不创建线条
+ * ctx.lineTo() ==> 添加一个新点，然后在画布中创建从该点到最后指定点的线条
+ * ctx.lineWidth ==> 设置当前的线条宽度
+ * ctx.strokeStyle ==> 设置用于笔触的颜色、渐变或模式
+ * ctx.stroke() ==> 绘制已定义的路径
+ * ctx.restore() ==> 返回之前保存过的路径状态和属性
+ */
 Ctl = {
+    /**
+     * [drawPts 绘制路径]
+     * @param  {[object]} ctx [2d上下文]
+     * @param  {[object or array]} pts [坐标点集合，或者包括坐标点集合及其他绘制属性的对象]
+     * @return {[object]}     [ctx.restore()]
+     */
     drawPts: function (ctx,pts) {
         if(pts instanceof Path || pts.pts){
             var color = pts.color,lw = pts.lw;
@@ -158,6 +186,7 @@ Ctl = {
         ctx.stroke();
         ctx.restore();
     },
+    // 初始化canvas状态及添加20个颜色板选项
     init : function () {
         canvas.paths=[];
         canvas.pts=[];
@@ -172,15 +201,20 @@ Ctl = {
     setColor(c){
         canvas.color = c;
     },
+    // 把路径添加到canvas.paths中
     addPath : function (pts) {
         canvas.paths.push(new Path(pts,canvas.lw,canvas.color));
     },
+    // 添加正在绘制过程中的所有点
     addPos : function (x,y) {
+        // canvas.pts.x，canvas.pts.y返回这种结果
         canvas.pts.push(new Pos(x,y));
     },
+    // 清除绘制的所有点
     clearPos : function () {
         canvas.pts = []
     },
+    // 添加颜色板
     addColor : function (active) {
         var rect = document.createElement('div'),r = this.random;
         rect.className = 'rect';
@@ -235,3 +269,10 @@ function Rect(x,y,w,h) {
 Rect.prototype.clearOn = function (ctx) {
     ctx.clearRect(this.x,this.y,this.w,this.h);
 }
+
+/**
+ *
+ * -->>>
+ *
+ * 
+ */

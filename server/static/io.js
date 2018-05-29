@@ -1,5 +1,5 @@
 var socket = io.connect();
-// 广播消息
+// 显示消息
 socket.on('server msg',function (data) {
     var ele = document.createElement('p');
     ele.innerHTML = data;
@@ -17,6 +17,7 @@ socket.on('login',function () {
     canvas.isMe = false;
     btnAutoin.disalbed = false;
 });
+// 根据路径参数进行绘制
 socket.on('paint paths',function (paths) {
     paths = JSON.parse(paths);
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -28,7 +29,9 @@ socket.on('paint paths',function (paths) {
         }
     }
 });
+// 根据路径参数进行绘制
 socket.on('paint pts',function (pts) {
+    console.log(pts)
     //canvas.paths = paths;
     pts = JSON.parse(pts)
     if(!pts) return;

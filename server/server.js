@@ -60,7 +60,7 @@ var tops = (function () {
     }
 }());
 
-
+// 指令操作
 function doCmd(msg,socket) {
     if(msg[0]==='#'){
         var msg = msg.substring(1),
@@ -109,6 +109,7 @@ function doCmd(msg,socket) {
     }
 }
 
+// 将预留字符转成字符实体
 function escapeHTML(data) {
     var s = '';
     for(var i = 0 ;i<data.length;i++){
@@ -141,6 +142,11 @@ function getSockets(s,sort) {
         });
     return a;
 }
+/**
+ * [getSocket 获取指定用户的socket]
+ * @param  {[object]} s [socket]
+ * @return {[object]}   [包含socket的id、in、name对象]
+ */
 function getSocket(s) {
     return {
         id :　s.id.substring(2),
@@ -157,7 +163,7 @@ io.sockets.on('connection',function (socket) {
         this.attrin = false;
         this.emit('server msg','欢迎, '+this.name+' !');
         this.broadcast.emit('server msg','欢迎, '+this.name+' !');
-        // paths为空数组，则清空给定矩形内的指定像素
+        // 若在绘制过程中，有新玩家进来，直接同步绘制之前图形
         this.emit('paint paths',JSON.stringify(paths));
         // 初始化上场的用户列表
         var users = Game.inQueue.map(x=>{return getSocket(x)});
@@ -223,11 +229,15 @@ io.sockets.on('connection',function (socket) {
             this.emit('out',this.id.substring(2));
             this.broadcast.emit('out user',this.id.substring(2));
         });
+        // 消息框收到的消息
         this.on('client msg',function (msg) {
+            // 不是操作指令
             if(!doCmd(msg,this)) {
+                // 转成实体
                 msg = escapeHTML(msg);
+                // 回答正确
                 if(Game.player && Game.player.word.word === msg){
-                    if(this.prev && this.prev.player === Game.player&& this.prev.word === msg){
+                    if(this.prev && this.prev.player === Game.player && this.prev.word === msg){
                         this.emit('server msg',"您已经正确回答过了！");
                         return;
                     }
@@ -237,6 +247,7 @@ io.sockets.on('connection',function (socket) {
                     var j = JSON.stringify(tops);
                     this.broadcast.emit('tops',j);
                     this.emit('tops',j);
+                    // 记录回答正解的信息
                     this.prev = {
                         player:Game.player,
                         word:msg
@@ -284,6 +295,7 @@ io.sockets.on('connection',function (socket) {
                     break;
             }
         });
+        // 重新绘制
         this.on('repaint',function () {
             this.emit('paint paths',JSON.stringify(paths));
         })
