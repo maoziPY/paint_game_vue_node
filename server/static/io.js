@@ -17,7 +17,7 @@ socket.on('login',function () {
     canvas.isMe = false;
     btnAutoin.disalbed = false;
 });
-// 根据路径参数进行绘制
+// 根据RAM中的paths变量，若存在tag==='pts'标识，则绘制，否则清除
 socket.on('paint paths',function (paths) {
     paths = JSON.parse(paths);
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -31,7 +31,6 @@ socket.on('paint paths',function (paths) {
 });
 // 根据路径参数进行绘制
 socket.on('paint pts',function (pts) {
-    console.log(pts)
     //canvas.paths = paths;
     pts = JSON.parse(pts)
     if(!pts) return;
@@ -53,6 +52,13 @@ socket.on('reset in users',function (data) {
         users.appendChild(utils.makeUserP(x));
     });
 })
+/**
+* [erase 清除指定位置及大小的画布]
+* @param  {[number]} x [x坐标]
+* @param  {[number]} y [y坐标]
+* @param  {[number]} w [宽]
+* @param  {[number]} h [高]
+*/
 socket.on('erase',function (x,y,w,h) {
     new Rect(x,y,w,h).clearOn(ctx);
 })
@@ -64,12 +70,13 @@ socket.on('out user',function (id) {
     var x = users.querySelector('#p'+id);
     if(x) x.outerHTML='';
 })
-// 显示自己已上场
+// 上场
 socket.on('in',function (data) {
     users.appendChild(utils.makeUserP(JSON.parse(data)));
     users.scrollTop = users.scrollHeight;
     btnIn.inAct();
 });
+// 下场
 socket.on('out',function (id) {
     var x = users.querySelector('#p'+id);
     if(x){

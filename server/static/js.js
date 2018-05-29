@@ -48,6 +48,7 @@ btnAutoin.addEventListener('click',function (e) {
 btnIn.addEventListener('click',function () {
     var t = this.in;
     if(this.t) clearTimeout(this.t);
+    // 自动上下场
     this.t = setTimeout(function () {
         socket.emit(!t?'in':'out');
     },400);
@@ -74,7 +75,7 @@ window.onload = function () {
             this.value = '';
         }
     }
-    // 画笔、橡皮擦、清空、下载，这几个按钮的点击事件
+    // 画笔、橡皮擦、清空、下载。仅用于两笔和橡皮擦切换显示激活的样式
     document.querySelector('#btns').addEventListener('click',function (e) {
         // 画笔或橡皮擦
         if(e.target.classList.contains('btn-active-able')){
@@ -93,6 +94,7 @@ canvas.addEventListener('mousemove',function (e) {
     var w=20,h=20;
     if(canvas.isMe){
         var x = e.offsetX, y = e.offsetY;
+        // e.buttons === 1，表示鼠标左键按下时并划动
         if(e.buttons === 1) {
             if(!this.erase){
                 Ctl.addPos(x,y);
@@ -124,6 +126,7 @@ canvas.addEventListener('mousedown',function (e) {
     //-------------------- 可爱的分隔线------------------
     if(this.erase){
         var w=20,h=20;
+        // w>>>1相当于Math.ceil(w/2)，表示向上取整
         var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
         rect.clearOn(ctx);
         socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
@@ -133,8 +136,11 @@ canvas.addEventListener('mousedown',function (e) {
     Ctl.clearPos();
     Ctl.addPos(x,y);
 });
+
+// 选择画笔颜色
 colors.addEventListener('click',function (e) {
     var t = e.target;
+    // 只对点击方形颜色块有效
     if(t.classList.contains('rect')){
         Array.prototype.slice.call(this.getElementsByClassName('active'))
             .forEach(v=>v.classList.remove('active'));
@@ -142,6 +148,8 @@ colors.addEventListener('click',function (e) {
         Ctl.setColor(t.style.backgroundColor);
     }
 });
+
+// 选择画笔宽度
 ranger.addEventListener('change',function (e) {
     this.nextElementSibling.innerText = this.value;
     Ctl.setLw(this.value);
@@ -195,9 +203,11 @@ Ctl = {
         for(var i=0;i<20;i++)
             this.addColor();
     },
+    // 设置画笔宽度
     setLw(lw){
         canvas.lw = lw;
     },
+    // 设置画笔颜色
     setColor(c){
         canvas.color = c;
     },
@@ -223,31 +233,11 @@ Ctl = {
         rect.style.backgroundColor = 'rgb('+[r(256),r(256),r(256)].join(',')+')';
         colors.appendChild(rect);
     },
+    // 生成随机数，主要用于随机生成颜色
     random : function (b) {
         return Math.floor(Math.random()*b);
     }
 };
-
-// webSocket
-/*
-var ws = WS({
-    path:'ws',
-    onOpen:function (e) {
-        alert('OK');
-    },
-    onError:function (e) {
-        // alert(e.message)
-        alert('Error');
-    },
-    onReceive:function (data,t) {
-
-    },
-    onClose:function (e) {
-        alert('Close');
-    }
-});*/
-
-
 
 // model
 
@@ -269,10 +259,3 @@ function Rect(x,y,w,h) {
 Rect.prototype.clearOn = function (ctx) {
     ctx.clearRect(this.x,this.y,this.w,this.h);
 }
-
-/**
- *
- * -->>>
- *
- * 
- */

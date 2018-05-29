@@ -60,7 +60,7 @@ var tops = (function () {
     }
 }());
 
-// 指令操作
+// 指令操作，竞猜玩家使用
 function doCmd(msg,socket) {
     if(msg[0]==='#'){
         var msg = msg.substring(1),
@@ -217,10 +217,13 @@ io.sockets.on('connection',function (socket) {
                 },4000);
             },2000);
         });
+        // 清除指定位置及大小的画布
         this.on('erase',function (x,y,w,h) {
-            paths.push({tag:'erase',x:x,y:y,w:w,h:h});
+            // paths.push({tag:'erase',x:x,y:y,w:w,h:h});
+            paths.push({x:x,y:y,w:w,h:h});
             this.broadcast.emit('erase',x,y,w,h);
         });
+        // 下场
         this.on('out',function () {
             // console.log('before',Game.inQueue.length);
             Game.inQueue.splice(Game.inQueue.findIndex(x=>{x.id===this.id}));
@@ -259,6 +262,7 @@ io.sockets.on('connection',function (socket) {
                 this.broadcast.emit('server msg',date+'<br>'+ this.name  + ' 说: ' + msg);
             }
         });
+        // 玩家离开
         this.on('disconnect',function () {
             if(Game.player && this.id === Game.player.id) {
                 delete Game.player;
@@ -280,6 +284,7 @@ io.sockets.on('connection',function (socket) {
             this.broadcast.emit('out user',this.id.substring(2));
             this.broadcast.emit('tops',JSON.stringify(tops));
         });
+        // 绘制画布
         this.on('paint',function (data) {
             if(!Game.player || Game.player.id !== this.id) return;
             data = JSON.parse(data);
@@ -299,6 +304,7 @@ io.sockets.on('connection',function (socket) {
         this.on('repaint',function () {
             this.emit('paint paths',JSON.stringify(paths));
         })
+        // 点击清空按钮
         this.on('clear paths',function () {
             if(this === Game.player) {
                 // console.log('clear all');
@@ -308,6 +314,7 @@ io.sockets.on('connection',function (socket) {
             }
         })
     });
+    // 自动登录
     socket.emit('login');
 })
 
