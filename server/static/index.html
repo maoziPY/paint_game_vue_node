@@ -28,7 +28,11 @@
                     <div style="background-color: gainsboro">
                         <div class="ctl-row" id="colors">
                             <span class="text-blue fl" style="padding:0 4px 0;">颜色</span>
-                            <div v-for="n in 20" @click="chooseColor(n)" :style="{ backgroundColor: addColor()}" @click="chooseColor()" class="rect" :class="{active: selectedColorIndex === n}"></div>
+                           
+                            <div v-for="n in 20" @click="chooseColor(n)" :style="{ backgroundColor: colorArr[n]}" class="rect" :class="{active: selectedColorIndex === n}"></div>
+
+                             <!-- 直接用:style="{ backgroundColor: addColor()}"生成样式有bug，选择颜色或者改变宽度时会自动触发addColor() -->
+                            <!-- <div v-for="n in 20" @click="chooseColor(n)" :style="{ backgroundColor: addColor()}" class="rect" :class="{active: selectedColorIndex === n}"></div> -->
                         </div>
                         <div class="ctl-row">
                             <span class="text-blue fl" style="padding:0 4px 0;">线宽</span>

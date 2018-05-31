@@ -43,11 +43,20 @@ let vm = new Vue({
         // 选中的颜色下标，-1=没选，用默认的黑色
         selectedColorIndex: -1,
         // 画笔的宽度
-        lineWidth: 1
+        lineWidth: 1,
+        colorArr: []
     },
     mounted () {
     	let _this = this
         _this.init();
+
+        // 初始化颜色数据
+        // PS:在html中直接用:style="{ backgroundColor: addColor()}"生成样式有bug，选择颜色或者改变宽度时会自动触发addColor()
+        for (let i=0; i<20; i++) {
+            colorArr.push(this.addColor())
+        }
+        this.colorArr = colorArr
+
 
         canvas = document.getElementsByTagName('canvas')[0];
         ctx = canvas.getContext('2d');
