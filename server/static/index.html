@@ -22,18 +22,18 @@
             <div style="float: left;width: 100%;">
                 <div style="margin-left:10px;margin-right: 400px;">
                     <div class="box-sh">
-                    <canvas height="600">
+                    <canvas height="600" @mousemove="canvasMousemove" @mouseup="canvasMouseup" @mousedown="canvasMousedown">
                         Sorry, Your Browser don't support canvas of Html5.
                     </canvas>
                     <div style="background-color: gainsboro">
                         <div class="ctl-row" id="colors">
                             <span class="text-blue fl" style="padding:0 4px 0;">颜色</span>
-                            <div v-for="n in 20" :style="{ backgroundColor: addColor()}" @click="chooseColor()" class="rect"></div>
+                            <div v-for="n in 20" @click="chooseColor(n)" :style="{ backgroundColor: addColor()}" @click="chooseColor()" class="rect" :class="{active: selectedColorIndex === n}"></div>
                         </div>
                         <div class="ctl-row">
                             <span class="text-blue fl" style="padding:0 4px 0;">线宽</span>
-                            <input id="ranger" type="range" style="width: 100px;" value="1" min="1" step="1" max="10"/>
-                            <span>1</span>
+                            <input id="ranger" type="range" @change="changeLineWidth" style="width: 100px;" v-model="lineWidth" min="1" step="1" max="10"/>
+                            <span v-cloak>{{lineWidth}}</span>
                             <div class="fr" id="btns">
                                 <a class="btn btn-blue btn-active-able" :class="{active: paintToolsSelected === 1}" @click="choosePaintTools('brush')" href="javascript:void(0)">画笔</a>
                                 <a class="btn btn-blue btn-active-able" :class="{active: paintToolsSelected === 2}" @click="choosePaintTools('eraser')" href="javascript:void(0)">橡皮擦</a>
@@ -53,7 +53,7 @@
 
                                 </div>
                                 <p class="fr" style="margin: 5px;">
-                                    <button class="btn btn-blue" id="btn-in" @click="inAct" title="上场后，队列第一位将会上场绘画">上场！</button>
+                                    <button class="btn btn-blue" id="btn-in" @click="getIn" title="上场后，队列第一位将会上场绘画">上场！</button>
                                     <button class="btn btn-blue" :class="{ on: isAutoin }" id="btn-autoin" @click="autoin" title="自动上场">自动上场</button>
                                 </p>
                                 <p style="clear: both"></p>

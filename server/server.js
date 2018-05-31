@@ -214,8 +214,8 @@ io.sockets.on('connection',function (socket) {
                     t.emit('update my time',o);
                     t.broadcast.emit('update time',o);
                     Game.timer = setTimeout(arguments.callee,1000);
-                },4000);
-            },2000);
+                },500);
+            },500);
         });
         // 清除指定位置及大小的画布
         this.on('erase',function (x,y,w,h) {
