@@ -6,12 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "start": "webpack --watch --config webpack.dev.js",
+    "prod": "webpack --config webpack.prod.js"
   },
   "dependencies": {
     "socket.io": "^1.4.6"
   },
   "devDependencies": {
+    "uglifyjs-webpack-plugin": "^1.2.5",
     "webpack": "^4.10.2",
     "webpack-cli": "^2.1.4"
   }
