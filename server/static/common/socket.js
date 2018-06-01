@@ -1,11 +1,6 @@
-// socket
-// var socket = io.connect();
-// import store from './store.js'
-// let [colorArr, Ctl, canvas, ctx, btnIn, msg, btnAutoin, info, users] = [store.colorArr, store.Ctl, store.canvas, store.ctx, store.btnIn, store.msg, store.btnAutoin, store.info, store.users]
-
 // 显示消息
 socket.on('server msg',function (data) {
-	vm.serverMsg(data)
+    vm.serverMsg(data)
 })
 // 入口，初始化状态
 socket.on('login',function () {
@@ -53,13 +48,7 @@ socket.on('reset in users',function (data) {
         users.appendChild(utils.makeUserP(x));
     });
 })
-/**
-* [erase 清除指定位置及大小的画布]
-* @param  {[number]} x [x坐标]
-* @param  {[number]} y [y坐标]
-* @param  {[number]} w [宽]
-* @param  {[number]} h [高]
-*/
+// 擦除
 socket.on('erase',function (x,y,w,h) {
     new Rect(x,y,w,h).clearOn(ctx);
 })
@@ -149,7 +138,7 @@ socket.on('tops',function (d) {
         tops.appendChild(node);
     });
 })
-utils = {
+var utils = {
     // 创建用户上场显示的标签及相应特性
     makeUserP : function (x) {
         var p = document.createElement('p'); p.id = 'p'+x.id;
