@@ -2,7 +2,6 @@ import util from './common/util.js'
 Ctl = util
 socket = io.connect();
 
-
 // 监听窗口大小变化
 function resize() {
     canvas.width = canvas.parentElement.clientWidth;
@@ -158,7 +157,6 @@ vm = new Vue({
         // 开始绘制
         canvasMousedown (e) {
         	if(!canvas.isMe) return;
-        	//-------------------- 可爱的分隔线------------------
         	if(canvas.erase){
         	    var w=20,h=20;
         	    // w>>>1相当于Math.ceil(w/2)，表示向上取整

@@ -12,6 +12,7 @@ module.exports = {
 		path: path.resolve(__dirname, './server/static/dist')
 	},
 	devtool: 'source-map',
+    // webpack4.0不再支持CommonsChunkPlugin的替代方案
     optimization: {
         splitChunks: {
             cacheGroups: {
