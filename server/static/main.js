@@ -157,18 +157,20 @@ socket.on('tops',function (d) {
 
 vm = new Vue({
     el: '#paintGame',
-    data: {
-        // 消息框
-        msg: '',
-        // 当前选中的绘制工具，0=没选，1=画笔，2=橡皮擦
-        paintToolsSelected: 0,
-        // 是否自动上场
-        isAutoin: false,
-        // 选中的颜色下标，-1=没选，用默认的黑色
-        selectedColorIndex: -1,
-        // 画笔的宽度
-        lineWidth: 1,
-        colorArr: []
+    data () {
+        return {
+            // 消息框
+            msg: '',
+            // 当前选中的绘制工具，0=没选，1=画笔，2=橡皮擦
+            paintToolsSelected: 0,
+            // 是否自动上场
+            isAutoin: false,
+            // 选中的颜色下标，-1=没选，用默认的黑色
+            selectedColorIndex: -1,
+            // 画笔的宽度
+            lineWidth: 1,
+            colorArr: []
+        }
     },
     mounted () {
     	let _this = this
