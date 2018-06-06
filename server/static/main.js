@@ -1,7 +1,8 @@
-import util from './common/util.js'
+import ctl from './common/ctl.js'
+import utils from './common/utils.js'
 import io from 'socket.io-client'
 // import Vue from 'vue'
-Ctl = util
+Ctl = ctl
 socket = io.connect();
 
 // 监听窗口大小变化
@@ -153,14 +154,6 @@ socket.on('tops',function (d) {
         tops.appendChild(node);
     });
 })
-var utils = {
-    // 创建用户上场显示的标签及相应特性
-    makeUserP : function (x) {
-        var p = document.createElement('p'); p.id = 'p'+x.id;
-        p.innerText = x.name;
-        return p;
-    }
-}
 
 vm = new Vue({
     el: '#paintGame',
