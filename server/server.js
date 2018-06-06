@@ -159,6 +159,7 @@ Game.inQueue = [];
 Game.player = null;
 io.sockets.on('connection',function (socket) {
     socket.on('login',function (name) {
+        name = decodeURIComponent(name)
         this.name = name || "无名游客";
         this.attrin = false;
         this.emit('server msg','欢迎, '+this.name+' !');

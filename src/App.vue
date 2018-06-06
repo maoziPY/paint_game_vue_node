@@ -93,7 +93,9 @@ var colorArr = [], Ctl = {}, canvas = {}, ctx = {}, btnIn = {}, msg = {}, btnAut
 
 // import ctl from './common/ctl.js'
 import utils from './common/utils.js'
-import io from 'socket.io-client'
+// import io from 'socket.io-client'
+// socket = io.connect('http://localhost:4000');
+import io from 'vue-socket.io'
 import Vue from 'vue'
 
 /**
@@ -179,162 +181,8 @@ Rect.prototype.clearOn = function (ctx) {
 }
 
 // Ctl = ctl
-socket = io.connect('http://localhost:4000');
-// Vue.use(io, 'http://localhost:4000')
 
-// 监听窗口大小变化
-function resize() {
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.paths = canvas.pts = [];
-    socket.emit('repaint');
-}
-window.addEventListener('resize',resize);
-
-
-// 显示消息
-socket.on('server msg',function (data) {
-    var ele = document.createElement('p');
-    ele.innerHTML = data;
-    msg.appendChild(ele);
-    msg.scrollTop = msg.scrollHeight;
-    // vm.serverMsg(data)
-})
-// 入口，初始化状态
-socket.on('login',function () {
-    if(!prompt)
-    // if(prompt)
-        socket.emit('login',prompt('输入你的姓名'));
-    else
-        socket.emit('login','手机用户');
-    btnIn.outAct();
-    canvas.isMe = false;
-    btnAutoin.disalbed = false;
-});
-// 根据RAM中的paths变量，若存在tag==='pts'标识，则绘制，否则清除
-socket.on('paint paths',function (paths) {
-    paths = JSON.parse(paths);
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    for(var k in paths) {
-        if(paths[k].tag==='pts')
-            Ctl.drawPts(ctx, paths[k]);
-        else{
-            new Rect(paths[k].x,paths[k].y,paths[k].w,paths[k].h).clearOn(ctx);
-        }
-    }
-});
-// 根据路径参数进行绘制
-socket.on('paint pts',function (pts) {
-    //canvas.paths = paths;
-    pts = JSON.parse(pts)
-    if(!pts) return;
-    Ctl.drawPts(ctx, pts);
-});
-socket.on('cmd',function (data) {
-    // console.log(JSON.parse(data));
-});
-// 上场的用户
-socket.on('reset in users',function (data) {
-    data = JSON.parse(data);
-    /*
-        [
-            {name: '', in:true}
-        ]
-     */
-    users.innerHTML = '';
-    data.forEach(x=>{
-        users.appendChild(utils.makeUserP(x));
-    });
-})
-// 擦除
-socket.on('erase',function (x,y,w,h) {
-    new Rect(x,y,w,h).clearOn(ctx);
-})
-// 广播通知有用户上场
-socket.on('new in user',function (data) {
-    users.appendChild(utils.makeUserP(JSON.parse(data)));
-});
-socket.on('out user',function (id) {
-    var x = users.querySelector('#p'+id);
-    if(x) x.outerHTML='';
-})
-// 上场
-socket.on('in',function (data) {
-    users.appendChild(utils.makeUserP(JSON.parse(data)));
-    users.scrollTop = users.scrollHeight;
-    btnIn.inAct();
-});
-// 下场
-socket.on('out',function (id) {
-    var x = users.querySelector('#p'+id);
-    if(x){
-        x.outerHTML='';
-        btnIn.outAct();
-    }
-});
-// 信息栏
-socket.on('mytime',function (data) {
-    data = JSON.parse(data);// name,word:,time
-    btnIn.disabled = true;
-    info.player.innerText = data.name + '(自己)';
-    info.time.innerText = data.time +'s';
-    info.word.innerText = data.word;
-    canvas.isMe = true;
-});
-// 广播信息栏
-socket.on('othertime',function (data) {
-    data = JSON.parse(data);// name,word:,time
-    info.player.innerText = data.name;
-    info.time.innerText = data.time +'s';
-    canvas.isMe = false;
-});
-// 广播倒计时及更新提示信息
-socket.on('update time',function (data) {
-    data = JSON.parse(data);
-    info.player.innerText = data.name;
-    info.time.innerText = data.time +'s';
-    info.word.innerText = data.word;
-});
-// 倒计时
-socket.on('update my time',function (data) {
-    data = JSON.parse(data);
-    info.time.innerText = data.time +'s';
-});
-// 时间到
-socket.on('mytimeout',function (id) {
-    var t = users.querySelector('#p'+id);
-    if(t) t.outerHTML='';
-    info.time.innerText = '时间到了！';
-    canvas.isMe = false;
-    btnIn.outAct();
-});
-// 广播时间到，公布答案
-socket.on('timeout',function (d) {
-    d = JSON.parse(d);
-    var t = users.querySelector('#p'+d.id);
-    if(t) t.outerHTML='';
-    info.time.innerText = '时间到了！';
-    info.word.innerText = '正确答案为：'+d.word;
-});
-// 清空画布
-socket.on('clear paint',function () {
-    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-});
-// 排行榜
-socket.on('tops',function (d) {
-    d = JSON.parse(d);
-    tops.innerHTML = '';
-    var temp = tops.template;
-    d.forEach((x,i)=>{
-        temp.id = x.id;
-        temp.children[0].firstElementChild.innerText = 'No'+(i+1);
-        temp.children[1].firstElementChild.innerText = x.name;
-        temp.children[2].firstElementChild.innerText = x.v+'次';
-
-        var node = tops.template.cloneNode(true);
-        node.removeAttribute('role');
-        tops.appendChild(node);
-    });
-})
+Vue.use(io, 'http://localhost:4000')
 
 export default {
     data () {
@@ -352,13 +200,156 @@ export default {
             colorArr: []
         }
     },
-    // sockets: {
-    //     connect: function(){
-    //       console.log('socket connected')
-    //     },
-    // },
+    sockets: {
+        // 显示消息
+        'server msg': function (data) {
+            var ele = document.createElement('p');
+            ele.innerHTML = data;
+            msg.appendChild(ele);
+            msg.scrollTop = msg.scrollHeight;
+        },
+        // 入口，初始化状态
+        login: function () {
+            if(!prompt)
+            // if(prompt)
+                this.$socket.emit('login',encodeURIComponent(prompt('输入你的姓名')));
+            else
+                this.$socket.emit('login', encodeURIComponent('手机用户'));
+            btnIn.outAct();
+            canvas.isMe = false;
+            btnAutoin.disalbed = false;
+        },
+        // 根据RAM中的paths变量，若存在tag==='pts'标识，则绘制，否则清除
+        'paint paths': function (paths) {
+            paths = JSON.parse(paths);
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            for(var k in paths) {
+                if(paths[k].tag==='pts')
+                    Ctl.drawPts(ctx, paths[k]);
+                else{
+                    new Rect(paths[k].x,paths[k].y,paths[k].w,paths[k].h).clearOn(ctx);
+                }
+            }
+        },
+        // 根据路径参数进行绘制
+        'paint pts': function (pts) {
+            //canvas.paths = paths;
+            pts = JSON.parse(pts)
+            if(!pts) return;
+            Ctl.drawPts(ctx, pts);
+        },
+        // 指令操作
+        cmd: function (data) {
+            console.log(JSON.parse(data));
+        },
+        // 上场的用户
+        'reset in users': function (data) {
+            data = JSON.parse(data);
+            // [
+            //     {name: '', in:true}
+            // ]
+            users.innerHTML = '';
+            data.forEach(x=>{
+                users.appendChild(utils.makeUserP(x));
+            });
+        },
+        // 擦除
+        erase: function (x,y,w,h) {
+            new Rect(x,y,w,h).clearOn(ctx);
+        },
+        // 广播通知有用户上场
+        'new in user': function (data) {
+            users.appendChild(utils.makeUserP(JSON.parse(data)));
+        },
+        'out user': function (id) {
+            var x = users.querySelector('#p'+id);
+            if(x) x.outerHTML='';
+        },
+        // 上场
+        in: function (data) {
+            users.appendChild(utils.makeUserP(JSON.parse(data)));
+            users.scrollTop = users.scrollHeight;
+            btnIn.inAct();
+        },
+        // 下场
+        out: function (id) {
+            var x = users.querySelector('#p'+id);
+            if(x){
+                x.outerHTML='';
+                btnIn.outAct();
+            }
+        },
+        // 信息栏
+        mytime: function (data) {
+            data = JSON.parse(data);// name,word:,time
+            btnIn.disabled = true;
+            info.player.innerText = data.name + '(自己)';
+            info.time.innerText = data.time +'s';
+            info.word.innerText = data.word;
+            canvas.isMe = true;
+        },
+        // 广播信息栏
+        othertime: function (data) {
+            data = JSON.parse(data);// name,word:,time
+            info.player.innerText = data.name;
+            info.time.innerText = data.time +'s';
+            canvas.isMe = false;
+        },
+        // 广播倒计时及更新提示信息
+        'update time': function (data) {
+            data = JSON.parse(data);
+            info.player.innerText = data.name;
+            info.time.innerText = data.time +'s';
+            info.word.innerText = data.word;
+        },
+        // 倒计时
+        'update my time': function (data) {
+            data = JSON.parse(data);
+            info.time.innerText = data.time +'s';
+        },
+        // 时间到
+        mytimeout: function (id) {
+            var t = users.querySelector('#p'+id);
+            if(t) t.outerHTML='';
+            info.time.innerText = '时间到了！';
+            canvas.isMe = false;
+            btnIn.outAct();
+        },
+        // 广播时间到，公布答案
+        'timeout': function (d) {
+            d = JSON.parse(d);
+            var t = users.querySelector('#p'+d.id);
+            if(t) t.outerHTML='';
+            info.time.innerText = '时间到了！';
+            info.word.innerText = '正确答案为：'+d.word;
+        },
+        // 清空画布
+        'clear paint': function () {
+            ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+        },
+        // 排行榜
+        tops: function (d) {
+            d = JSON.parse(d);
+            tops.innerHTML = '';
+            var temp = tops.template;
+            d.forEach((x,i)=>{
+                temp.id = x.id;
+                temp.children[0].firstElementChild.innerText = 'No'+(i+1);
+                temp.children[1].firstElementChild.innerText = x.name;
+                temp.children[2].firstElementChild.innerText = x.v+'次';
+
+                var node = tops.template.cloneNode(true);
+                node.removeAttribute('role');
+                tops.appendChild(node);
+            });
+        },
+        connect: function () {
+           console.log(this.$socket)
+           console.log('socket connected')
+        },
+    },
     mounted () {
-        let _this = this
+        let _this = this;
         _this.init();
 
         // 初始化颜色数据
@@ -385,7 +376,9 @@ export default {
             this.disabled = false;
         };
 
-        resize();
+        window.addEventListener('resize',this.resize);
+
+        this.resize();
 
         msg = document.getElementById('msg');
         btnAutoin = document.getElementById('btn-autoin');
@@ -415,7 +408,7 @@ export default {
                     alert('绘图者不能够发送消息！');
                     return;
                 }
-                socket.emit('client msg',_this.msg);
+                this.$socket.emit('client msg',_this.msg);
                 _this.msg = '';
             }
         },
@@ -446,23 +439,25 @@ export default {
         },
         // 上场
         getIn () {
-            var t = btnIn.in;
+            var t = btnIn.in,
+            that = this;
             if(btnIn.t) clearTimeout(btnIn.t);
             // 自动上下场
             btnIn.t = setTimeout(function () {
-                socket.emit(!t?'in':'out');
+                that.$socket.emit(!t?'in':'out');
             },400);
         },
         // 自动上场
         autoin () {
-            var btnin = btnIn;
+            var btnin = btnIn,
+            $socket = this.$socket;
             if(btnin.autoIn == null){
-                if(!btnin.in) socket.emit('in');
+                if(!btnin.in) $socket.emit('in');
                 // 5少轮循，检查自动上场
                 btnin.autoIn = setInterval(function () {
                     // 上场后，isMe=true，btnin.in=true
                     if(canvas.isMe) return;
-                    if(!btnin.in) socket.emit('in');
+                    if(!btnin.in) $socket.emit('in');
                 },5000);
             }else{
                 clearInterval(btnin.autoIn);
@@ -494,7 +489,7 @@ export default {
                 // w>>>1相当于Math.ceil(w/2)，表示向上取整
                 var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
                 rect.clearOn(ctx);
-                socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
+                this.$socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
                 return;
             }
             var x = e.offsetX,y = e.offsetY;
@@ -511,11 +506,11 @@ export default {
                     if(!canvas.erase){
                         Ctl.addPos(x,y);
                         Ctl.drawPts(ctx, canvas.pts);
-                        socket.emit('paint',JSON.stringify({data:new Path(canvas.pts),status:'ing'}))
+                        this.$socket.emit('paint',JSON.stringify({data:new Path(canvas.pts),status:'ing'}))
                     }else{
                         var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
                         rect.clearOn(ctx);
-                        socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
+                        this.$socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
                     }
                 }
             }
@@ -526,8 +521,14 @@ export default {
             var x = e.offsetX,y = e.offsetY;
             Ctl.addPos(x,y);
             Ctl.addPath(canvas.pts);
-            socket.emit('paint',JSON.stringify({data:new Path(canvas.pts),status:'end'}));
+            this.$socket.emit('paint',JSON.stringify({data:new Path(canvas.pts),status:'end'}));
             Ctl.clearPos();
+        },
+        // 监听窗口大小变化，进行重绘
+        resize () {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.paths = canvas.pts = [];
+            this.$socket.emit('repaint');
         }
     },
     computed: {}
