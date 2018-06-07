@@ -89,7 +89,7 @@
 
 <script>
 
-var canvas = ctx = btnIn = btnAutoin = info = users = {};
+var canvas = {}, ctx = {}, btnIn = {}, btnAutoin = {}, info = {}, users = {};
 
 import utils from './common/utils.js'
 import io from 'vue-socket.io'
