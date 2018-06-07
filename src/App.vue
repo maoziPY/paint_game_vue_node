@@ -89,11 +89,9 @@
 
 <script>
 
-var canvas = {}, ctx = {}, btnIn = {}, btnAutoin = {}, info = {}, users = {}
+var canvas = ctx = btnIn = btnAutoin = info = users = {};
 
 import utils from './common/utils.js'
-// import io from 'socket.io-client'
-// socket = io.connect('http://localhost:4000');
 import io from 'vue-socket.io'
 import Vue from 'vue'
 
@@ -151,7 +149,7 @@ var Ctl = {
     // 添加正在绘制过程中的所有点
     addPos : function (x,y) {
         // canvas.pts.x，canvas.pts.y返回这种结果
-        canvas.pts.push(new Pos(x,y));
+        canvas.pts.push({x:x,y:y});
     },
     // 清除绘制的所有点
     clearPos : function () {
@@ -160,10 +158,6 @@ var Ctl = {
 };
 
 // model
-
-function Pos(x,y) {
-    this.x=x;this.y=y;
-}
 
 function Path(pts,lw,color) {
     this.pts = pts;
@@ -230,7 +224,7 @@ export default {
                 }
             }
         },
-        // 根据路径参数进行绘制
+        // 其他玩家同步绘画人的绘画
         'paint pts': function (pts) {
             //canvas.paths = paths;
             pts = JSON.parse(pts)

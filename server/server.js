@@ -285,7 +285,7 @@ io.sockets.on('connection',function (socket) {
             this.broadcast.emit('out user',this.id.substring(2));
             this.broadcast.emit('tops',JSON.stringify(tops));
         });
-        // 绘制画布
+        // 同步绘画人的绘画到其他玩家
         this.on('paint',function (data) {
             if(!Game.player || Game.player.id !== this.id) return;
             data = JSON.parse(data);
