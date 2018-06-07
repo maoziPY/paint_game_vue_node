@@ -89,7 +89,7 @@
 
 <script>
 
-var colorArr = [], canvas = {}, ctx = {}, btnIn = {}, msg = {}, btnAutoin = {}, info = {}, users = {}, vm = {}, socket = {};
+var canvas = {}, ctx = {}, btnIn = {}, btnAutoin = {}, info = {}, users = {}
 
 import utils from './common/utils.js'
 // import io from 'socket.io-client'
@@ -202,7 +202,7 @@ export default {
     sockets: {
         // 显示消息
         'server msg': function (data) {
-            var ele = document.createElement('p');
+            let [ele, msg] = [document.createElement('p'), this.msg];
             ele.innerHTML = data;
             msg.appendChild(ele);
             msg.scrollTop = msg.scrollHeight;
@@ -352,10 +352,11 @@ export default {
 
         // 初始化颜色数据
         // PS:在html中直接用:style="{ backgroundColor: addColor()}"生成样式有bug，选择颜色或者改变宽度时会自动触发addColor()
+        let colorTemp = []
         for (let i=0; i<20; i++) {
-            colorArr.push(this.addColor())
+            colorTemp.push(this.addColor())
         }
-        this.colorArr = colorArr
+        this.colorArr = colorTemp
 
 
         canvas = document.getElementsByTagName('canvas')[0];
@@ -378,7 +379,7 @@ export default {
 
         this.resize();
 
-        msg = document.getElementById('msg');
+        this.msg = document.getElementById('msg');
         btnAutoin = document.getElementById('btn-autoin');
         info = document.getElementById('info');
         users = document.getElementById('div-users');
@@ -429,7 +430,7 @@ export default {
          */
         chooseColor (index) {
             this.selectedColorIndex = index
-            Ctl.setColor(colorArr[index]);
+            Ctl.setColor(this.colorArr[index]);
         },
         // 选择画笔宽度 
         changeLineWidth () {
@@ -476,7 +477,7 @@ export default {
         addColor () {
             let r = this.random
             let color = 'rgb('+[r(256),r(256),r(256)].join(',')+')'
-            colorArr.push(color)
+            this.colorArr.push(color)
             return color
         },
         // 开始绘制
