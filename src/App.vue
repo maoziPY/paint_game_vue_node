@@ -1,7 +1,7 @@
 <!-- 简单写个title和一个循环 -->
 <template>
     <div id="example" class="container">
-        <h1>------</h1>
+        <h1>你画我猜</h1>
         <div class="row">
             <div style="float: left;width: 100%;">
                 <div style="margin-left:10px;margin-right: 400px;">

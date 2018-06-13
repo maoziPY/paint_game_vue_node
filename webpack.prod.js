@@ -4,7 +4,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
 	mode: 'none',
 	entry: {
-		main: './server/static/main.js',
+		main: './src/main.js',
 		socket: './server/static/common/socket.js'
 	},
 	output: {
