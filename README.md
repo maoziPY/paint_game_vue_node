@@ -13,7 +13,6 @@
 
     http://localhost:4000/
 
-    webpack 开发及生产模式
-
-    dev: npm run start
-    pro: npm run prod
+    单文件组件方式
+    开发：npm run start
+    http://localhost:8080
