@@ -14,5 +14,5 @@
     http://localhost:4000/
 
     单文件组件方式
-    开发：npm run start
+    开发：npm run server
     http://localhost:8080
