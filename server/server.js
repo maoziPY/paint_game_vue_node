@@ -222,7 +222,7 @@ io.sockets.on('connection',function (socket) {
         this.on('erase',function (x,y,w,h) {
             // paths.push({tag:'erase',x:x,y:y,w:w,h:h});
             paths.push({x:x,y:y,w:w,h:h});
-            this.broadcast.emit('erase',x,y,w,h);
+            this.broadcast.emit('erase',{x,y,w,h});
         });
         // 下场
         this.on('out',function () {
@@ -310,8 +310,8 @@ io.sockets.on('connection',function (socket) {
             if(this === Game.player) {
                 // console.log('clear all');
                 paths = [];
-                this.emit('clear paint');
-                this.broadcast.emit('clear paint');
+                this.emit('clear paths');
+                this.broadcast.emit('clear paths');
             }
         })
     });

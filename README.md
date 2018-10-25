@@ -18,4 +18,4 @@
     http://localhost:8080
 
 
-    --- erase: function (x,y,w,h) {}消息接收问题
+    --- 下载

@@ -24,7 +24,7 @@
                 <div class="fr" id="btns">
                   <a class="btn btn-blue btn-active-able" :class="{active: paintToolsSelected === 1}" @click="choosePaintTools('brush')" href="javascript:void(0)">画笔</a>
                   <a class="btn btn-blue btn-active-able" :class="{active: paintToolsSelected === 2}" @click="choosePaintTools('eraser')" href="javascript:void(0)">橡皮擦</a>
-                  <a class="btn btn-blue" onclick="socket.emit('clear paths');" href="javascript:;">清空</a>
+                  <a class="btn btn-blue" @click="clearPaths" href="javascript:void(0)">清空</a>
                   <a class="btn btn-blue" onclick="this.href=canvas.toDataURL();" download="png.png">下载</a>
                 </div>
                 <div style="clear: both;"></div>
@@ -246,7 +246,7 @@ export default {
             });
           },
         // 擦除
-        erase: function (x,y,w,h) {
+        erase: function ({x,y,w,h}) {
           new Rect(x,y,w,h).clearOn(ctx);
         },
         // 广播通知有用户上场
@@ -316,7 +316,7 @@ export default {
           info.word.innerText = '正确答案为：'+d.word;
         },
         // 清空画布
-        'clear paint': function () {
+        'clear paths': function () {
           ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
         },
         // 排行榜
@@ -416,6 +416,10 @@ export default {
             this.paintToolsSelected = 2
             canvas.erase=true;
           }
+        },
+        // 清空
+        clearPaths () {
+          this.$socket.emit('clear paths');
         },
         /**
          * [chooseColor 选择画笔颜色]
