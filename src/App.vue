@@ -195,7 +195,7 @@ export default {
         sockets: {
         // 显示消息
         'server msg': function (data) {
-          let [ele, msg] = [document.createElement('p'), this.msg];
+          let [ele, msg] = [document.createElement('p'), this.MSG];
           ele.innerHTML = data;
           msg.appendChild(ele);
           msg.scrollTop = msg.scrollHeight;
@@ -372,7 +372,7 @@ export default {
 
         this.resize();
 
-        this.msg = document.getElementById('msg');
+        this.MSG = document.getElementById('msg');
         btnAutoin = document.getElementById('btn-autoin');
         info = document.getElementById('info');
         users = document.getElementById('div-users');
@@ -476,7 +476,9 @@ export default {
         // 开始绘制
         canvasMousedown (e) {
           if(!canvas.isMe) return;
+          var x = e.offsetX,y = e.offsetY;
           if(canvas.erase){
+
             var w=20,h=20;
                 // w>>>1相当于Math.ceil(w/2)，表示向上取整
                 var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
@@ -484,7 +486,7 @@ export default {
                 this.$socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
                 return;
               }
-              var x = e.offsetX,y = e.offsetY;
+              
               Ctl.clearPos();
               Ctl.addPos(x,y);
             },
