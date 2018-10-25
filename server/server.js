@@ -6,7 +6,7 @@ httpd.listen(4000, ()=>{console.log('Server listening on port 4000\n http:localh
 
 // 静态文件
 function handler(req,res) {
-    fs.readFile(__dirname+'/static/'+(req.url==='/'?'index.html':req.url),
+    fs.readFile(__dirname+'/static/dist/'+(req.url==='/'?'index.html':req.url),
         function (err,data) {
             if(err){
                 res.writeHead(500);

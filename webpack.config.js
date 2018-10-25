@@ -2,6 +2,8 @@
 var path = require('path');
 var webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     mode: 'none',
@@ -9,11 +11,12 @@ module.exports = {
     entry: './src/main.js',
     output: {
         /* 输出目录，没有则新建 */
-        path: path.resolve(__dirname, './dist'),
+        path: path.resolve(__dirname, './server/static/dist'),
+        // path: path.resolve(__dirname, './dist'),
         /* 静态目录，可以直接从这里取文件 */
-        publicPath: '/dist/',
+        // publicPath: '/dist/',
         /* 文件名 */
-        filename: 'build.js'
+        filename: '[name].build.[hash].js'
     },
     module: {
         rules: [
@@ -38,6 +41,12 @@ module.exports = {
         ]
     },
     plugins: [
-        new VueLoaderPlugin()
+        new CleanWebpackPlugin(['./server/static/dist']),
+        new VueLoaderPlugin(),
+        new HtmlWebpackPlugin({
+            title: '你画我猜',
+            template: './index.html',
+            inject: 'body'
+        })
     ]
 }
