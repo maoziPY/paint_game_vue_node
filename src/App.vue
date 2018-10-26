@@ -25,7 +25,7 @@
                   <a class="btn btn-blue btn-active-able" :class="{active: paintToolsSelected === 1}" @click="choosePaintTools('brush')" href="javascript:void(0)">画笔</a>
                   <a class="btn btn-blue btn-active-able" :class="{active: paintToolsSelected === 2}" @click="choosePaintTools('eraser')" href="javascript:void(0)">橡皮擦</a>
                   <a class="btn btn-blue" @click="clearPaths" href="javascript:void(0)">清空</a>
-                  <a class="btn btn-blue" onclick="this.href=canvas.toDataURL();" download="png.png">下载</a>
+                  <a class="btn btn-blue" @click="download" download="png.png">下载</a>
                 </div>
                 <div style="clear: both;"></div>
               </div>
@@ -179,16 +179,11 @@ Vue.use(io, 'http://localhost:4000')
 export default {
   data () {
     return {
-            // 消息框
-            msg: '',
-            // 当前选中的绘制工具，0=没选，1=画笔，2=橡皮擦
-            paintToolsSelected: 0,
-            // 是否自动上场
-            isAutoin: false,
-            // 选中的颜色下标，-1=没选，用默认的黑色
-            selectedColorIndex: -1,
-            // 画笔的宽度
-            lineWidth: 1,
+            msg: '', // 消息框
+            paintToolsSelected: 0, // 当前选中的绘制工具，0=没选，1=画笔，2=橡皮擦
+            isAutoin: false, // 是否自动上场
+            selectedColorIndex: -1, // 选中的颜色下标，-1=没选，用默认的黑色
+            lineWidth: 1, // 画笔的宽度
             colorArr: []
           }
         },
@@ -353,6 +348,7 @@ export default {
 
 
         canvas = document.getElementsByTagName('canvas')[0];
+        this.canvas = canvas;
         ctx = canvas.getContext('2d');
         btnIn = document.getElementById('btn-in');
 
@@ -420,6 +416,10 @@ export default {
         // 清空
         clearPaths () {
           this.$socket.emit('clear paths');
+        },
+        // 下载
+        download (e) {
+          e.target.href=canvas.toDataURL()
         },
         /**
          * [chooseColor 选择画笔颜色]
