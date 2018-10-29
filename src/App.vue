@@ -88,7 +88,7 @@
 
 <script>
 
-  var canvas = {}, ctx = {}, btnIn = {}, btnAutoin = {}, info = {}, users = {};
+  let [canvas, ctx, btnIn, btnAutoin, info, users] = [{}, {}, {}, {}, {}, {}];
 
   import utils from './common/utils.js'
   import io from 'vue-socket.io'
@@ -109,14 +109,14 @@
  * ctx.stroke() ==> 绘制已定义的路径
  * ctx.restore() ==> 返回之前保存过的路径状态和属性
  */
- var Ctl = {
+ const Ctl = {
     /**
      * [drawPts 绘制路径]
      * @param  {[object]} ctx [2d上下文]
      * @param  {[object or array]} pts [坐标点集合，或者包括坐标点集合及其他绘制属性的对象]
      * @return {[object]}     [ctx.restore()]
      */
-     drawPts: function (ctx,pts) {
+     drawPts(ctx,pts) {
       if(pts instanceof Path || pts.pts){
         var color = pts.color,lw = pts.lw;
         pts = pts.pts;
@@ -142,16 +142,16 @@
       canvas.color = c;
     },
     // 把路径添加到canvas.paths中
-    addPath : function (pts) {
+    addPath(pts) {
       canvas.paths.push(new Path(pts,canvas.lw,canvas.color));
     },
     // 添加正在绘制过程中的所有点
-    addPos : function (x,y) {
+    addPos(x,y) {
         // canvas.pts.x，canvas.pts.y返回这种结果
         canvas.pts.push({x:x,y:y});
       },
     // 清除绘制的所有点
-    clearPos : function () {
+    clearPos() {
       canvas.pts = []
     }
   };
@@ -168,7 +168,7 @@ function Rect(x,y,w,h) {
   this.x=x;this.y=y;this.w=w;this.h=h;
 }
 
-Rect.prototype.clearOn = function (ctx) {
+Rect.prototype.clearOn = function (ctx){
   ctx.clearRect(this.x,this.y,this.w,this.h);
 }
 
@@ -189,14 +189,14 @@ export default {
         },
         sockets: {
         // 显示消息
-        'server msg': function (data) {
+        'server msg'(data) {
           let [ele, msg] = [document.createElement('p'), this.MSG];
           ele.innerHTML = data;
           msg.appendChild(ele);
           msg.scrollTop = msg.scrollHeight;
         },
         // 入口，初始化状态
-        login: function () {
+        login() {
           if(!prompt)
             // if(prompt)
           this.$socket.emit('login',encodeURIComponent(prompt('输入你的姓名')));
@@ -207,7 +207,7 @@ export default {
           btnAutoin.disalbed = false;
         },
         // 根据RAM中的paths变量，若存在tag==='pts'标识，则绘制，否则清除
-        'paint paths': function (paths) {
+        'paint paths'(paths) {
           paths = JSON.parse(paths);
           ctx.clearRect(0,0,canvas.width,canvas.height);
           for(var k in paths) {
@@ -219,18 +219,18 @@ export default {
           }
         },
         // 其他玩家同步绘画人的绘画
-        'paint pts': function (pts) {
+        'paint pts'(pts) {
             //canvas.paths = paths;
             pts = JSON.parse(pts)
             if(!pts) return;
             Ctl.drawPts(ctx, pts);
           },
         // 指令操作
-        cmd: function (data) {
+        cmd(data) {
           console.log(JSON.parse(data));
         },
         // 上场的用户
-        'reset in users': function (data) {
+        'reset in users'(data) {
           data = JSON.parse(data);
             // [
             //     {name: '', in:true}
@@ -241,25 +241,25 @@ export default {
             });
           },
         // 擦除
-        erase: function ({x,y,w,h}) {
+        erase({x,y,w,h}) {
           new Rect(x,y,w,h).clearOn(ctx);
         },
         // 广播通知有用户上场
-        'new in user': function (data) {
+        'new in user'(data) {
           users.appendChild(utils.makeUserP(JSON.parse(data)));
         },
-        'out user': function (id) {
+        'out user'(id) {
           var x = users.querySelector('#p'+id);
           if(x) x.outerHTML='';
         },
         // 上场
-        in: function (data) {
+        in(data) {
           users.appendChild(utils.makeUserP(JSON.parse(data)));
           users.scrollTop = users.scrollHeight;
           btnIn.inAct();
         },
         // 下场
-        out: function (id) {
+        out(id) {
           var x = users.querySelector('#p'+id);
           if(x){
             x.outerHTML='';
@@ -267,7 +267,7 @@ export default {
           }
         },
         // 信息栏
-        mytime: function (data) {
+        mytime(data) {
             data = JSON.parse(data);// name,word:,time
             btnIn.disabled = true;
             info.player.innerText = data.name + '(自己)';
@@ -276,26 +276,26 @@ export default {
             canvas.isMe = true;
           },
         // 广播信息栏
-        othertime: function (data) {
+        othertime(data) {
             data = JSON.parse(data);// name,word:,time
             info.player.innerText = data.name;
             info.time.innerText = data.time +'s';
             canvas.isMe = false;
           },
         // 广播倒计时及更新提示信息
-        'update time': function (data) {
+        'update time'(data) {
           data = JSON.parse(data);
           info.player.innerText = data.name;
           info.time.innerText = data.time +'s';
           info.word.innerText = data.word;
         },
         // 倒计时
-        'update my time': function (data) {
+        'update my time'(data) {
           data = JSON.parse(data);
           info.time.innerText = data.time +'s';
         },
         // 时间到
-        mytimeout: function (id) {
+        mytimeout(id) {
           var t = users.querySelector('#p'+id);
           if(t) t.outerHTML='';
           info.time.innerText = '时间到了！';
@@ -303,7 +303,7 @@ export default {
           btnIn.outAct();
         },
         // 广播时间到，公布答案
-        'timeout': function (d) {
+        'timeout'(d) {
           d = JSON.parse(d);
           var t = users.querySelector('#p'+d.id);
           if(t) t.outerHTML='';
@@ -311,11 +311,11 @@ export default {
           info.word.innerText = '正确答案为：'+d.word;
         },
         // 清空画布
-        'clear paths': function () {
+        'clear paths'() {
           ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
         },
         // 排行榜
-        tops: function (d) {
+        tops(d) {
           d = JSON.parse(d);
           tops.innerHTML = '';
           var temp = tops.template;
@@ -330,7 +330,7 @@ export default {
             tops.appendChild(node);
           });
         },
-        connect: function () {
+        connect() {
          console.log('socket connected')
        },
      },
@@ -353,12 +353,12 @@ export default {
         btnIn = document.getElementById('btn-in');
 
         // 初始化已上场状态
-        btnIn.inAct = function () {
+        btnIn.inAct = () => {
           this.innerText='下场';
           this.in=true;
         };
         // 初始化待上场状态
-        btnIn.outAct = function () {
+        btnIn.outAct = () => {
           this.innerText='上场！';
           this.in=false;
           this.disabled = false;
@@ -439,7 +439,7 @@ export default {
           that = this;
           if(btnIn.t) clearTimeout(btnIn.t);
             // 自动上下场
-            btnIn.t = setTimeout(function () {
+            btnIn.t = setTimeout(() => {
               that.$socket.emit(!t?'in':'out');
             },400);
           },
@@ -450,7 +450,7 @@ export default {
           if(btnin.autoIn == null){
             if(!btnin.in) $socket.emit('in');
                 // 5少轮循，检查自动上场
-                btnin.autoIn = setInterval(function () {
+                btnin.autoIn = setInterval(() => {
                     // 上场后，isMe=true，btnin.in=true
                     if(canvas.isMe) return;
                     if(!btnin.in) $socket.emit('in');
