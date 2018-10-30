@@ -79,6 +79,7 @@
       <div class="box-sh" style="margin-left: -380px;float: left;width:370px;">
         <h3>消息框</h3>
         <div id="msg">
+          <p v-for='item in broadcast'>{{item}}</p>
         </div>
         <input type="text" id="input-msg" v-model="msg" @keyup.13="sendMessage()" placeholder="输入消息或者词语，回车键发送"/>
       </div>
@@ -179,7 +180,8 @@ Vue.use(io, 'http://localhost:4000')
 export default {
   data () {
     return {
-            msg: '', // 消息框
+            broadcast: [], // 消息列表
+            msg: '', // 输入框
             paintToolsSelected: 0, // 当前选中的绘制工具，0=没选，1=画笔，2=橡皮擦
             isAutoin: false, // 是否自动上场
             selectedColorIndex: -1, // 选中的颜色下标，-1=没选，用默认的黑色
@@ -190,9 +192,8 @@ export default {
         sockets: {
         // 显示消息
         'server msg'(data) {
-          let [ele, msg] = [document.createElement('p'), this.MSG];
-          ele.innerHTML = data;
-          msg.appendChild(ele);
+          const msg =  this.MSG;
+          this.broadcast.push(data);
           msg.scrollTop = msg.scrollHeight;
         },
         // 入口，初始化状态
@@ -449,7 +450,7 @@ export default {
           $socket = this.$socket;
           if(btnin.autoIn == null){
             if(!btnin.in) $socket.emit('in');
-                // 5少轮循，检查自动上场
+                // 5秒轮循，检查自动上场
                 btnin.autoIn = setInterval(() => {
                     // 上场后，isMe=true，btnin.in=true
                     if(canvas.isMe) return;
