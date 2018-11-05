@@ -28,9 +28,15 @@ var db = (function () {
     //     if (err) throw err;
     //     var dbo = db.db("test");
     //     var myobj = data;
-    //     dbo.collection("site").insertMany(myobj, function(err, res) {
+    //     // dbo.collection("site").insertMany(myobj, function(err, res) {
+    //     //     if (err) throw err;
+    //     //     console.log("插入的文档数量为: " + res.insertedCount);
+    //     //     db.close();
+    //     // });
+
+    //     dbo.collection("site"). find({}).toArray(function(err, result) { // 返回集合中所有数据
     //         if (err) throw err;
-    //         console.log("插入的文档数量为: " + res.insertedCount);
+    //         console.log(result);
     //         db.close();
     //     });
     // });
