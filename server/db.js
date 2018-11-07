@@ -2,6 +2,7 @@ var fs = require('fs');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/test";
 
+let dbData = [];
 
 const insertMany = (ctx, collection, data, db) => {
     ctx.collection(collection).insertMany(data, function(err, res) {
@@ -11,36 +12,41 @@ const insertMany = (ctx, collection, data, db) => {
     });
 }
 
-const close = () => {
-
+const initData = (ctx, collection, db) => {
+    // return new Promise((resolve, reject) => {
+    //     ctx.collection(collection). find({}).toArray(function(err, result) { // 返回集合中所有数据
+    //         resolve(result);
+    //         dbData = result;
+    //         if (err) reject(err);
+    //         db.close();
+    //     });
+    // })
+    ctx.collection(collection). find({}).toArray(function(err, result) { // 返回集合中所有数据
+        dbData = result;
+        if (err) throw err;
+        db.close();
+    });
 }
 
 const randomWord = () => {
-
+    // console.log(dbData.length)
+    // if (!dbData.length) {
+    //     initData().then((data) => {
+    //         console.log(data.length)
+    //     })
+    // }
+    return dbData[Math.floor(Math.random()*dbData.length)];
 }
 
-const connect = () => {
-    
-}
 
-
- 
+var file = __dirname+'/db.json';
 var data = JSON.parse(fs.readFileSync(file));
 MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     var dbo = db.db("test");
     var myobj = data;
-    insertMany(dbo, 'site', myobj, db);
-    // dbo.collection("site").insertMany(myobj, function(err, res) {
-    //     if (err) throw err;
-    //     console.log("插入的文档数量为: " + res.insertedCount);
-    //     db.close();
-    // });
-
-    // dbo.collection("site"). find({}).toArray(function(err, result) { // 返回集合中所有数据
-    //     if (err) throw err;
-    //     db.close();
-    // });
+    // insertMany(dbo, 'site', myobj, db);
+    initData(dbo, 'site', db);
 });
 
 
@@ -68,4 +74,5 @@ MongoClient.connect(url, function(err, db) {
 //     }
 // })();
 
-module.exports = db;
+// module.exports = db;
+module.exports = {randomWord};
