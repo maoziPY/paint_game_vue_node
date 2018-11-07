@@ -2,9 +2,9 @@ var fs = require('fs');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/test";
 
-let dbData = [];
+let [dbData, ctx, collection, db] = [[], null, 'site', null];
 
-const insertMany = (ctx, collection, data, db) => {
+const insertMany = () => {
     ctx.collection(collection).insertMany(data, function(err, res) {
         if (err) throw err;
         console.log("插入的文档数量为: " + res.insertedCount);
@@ -12,41 +12,43 @@ const insertMany = (ctx, collection, data, db) => {
     });
 }
 
-const initData = (ctx, collection, db) => {
-    // return new Promise((resolve, reject) => {
-    //     ctx.collection(collection). find({}).toArray(function(err, result) { // 返回集合中所有数据
-    //         resolve(result);
-    //         dbData = result;
-    //         if (err) reject(err);
-    //         db.close();
-    //     });
-    // })
-    ctx.collection(collection). find({}).toArray(function(err, result) { // 返回集合中所有数据
-        dbData = result;
-        if (err) throw err;
-        db.close();
-    });
+const initData = () => {
+    return new Promise((resolve, reject) => {
+        ctx.collection(collection). find({}).toArray(function(err, result) { // 返回集合中所有数据
+            resolve(result);
+            dbData = result;
+            if (err) reject(err);
+            db.close();
+        });
+    })
+    // ctx.collection(collection). find({}).toArray(function(err, result) { // 返回集合中所有数据
+    //     dbData = result;
+    //     if (err) throw err;
+    //     db.close();
+    // });
 }
 
 const randomWord = () => {
-    // console.log(dbData.length)
-    // if (!dbData.length) {
-    //     initData().then((data) => {
-    //         console.log(data.length)
-    //     })
-    // }
-    return dbData[Math.floor(Math.random()*dbData.length)];
+    console.log(dbData.length)
+    if (!dbData.length) {
+        initData().then((data) => {
+            console.log(data.length)
+        })
+    }
+    // return dbData[Math.floor(Math.random()*dbData.length)];
 }
 
 
-var file = __dirname+'/db.json';
-var data = JSON.parse(fs.readFileSync(file));
-MongoClient.connect(url, function(err, db) {
+// node 获取数据
+// var file = __dirname+'/db.json';
+// dbData = JSON.parse(fs.readFileSync(file));
+MongoClient.connect(url, function(err, _db) {
     if (err) throw err;
-    var dbo = db.db("test");
-    var myobj = data;
+    db = _db;
+    ctx = _db.db("test");
     // insertMany(dbo, 'site', myobj, db);
-    initData(dbo, 'site', db);
+    // initData()
+    randomWord()
 });
 
 
