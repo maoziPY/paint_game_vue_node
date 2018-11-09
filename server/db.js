@@ -29,26 +29,30 @@ const initData = () => {
 }
 
 const randomWord = () => {
-    console.log(dbData.length)
-    if (!dbData.length) {
-        initData().then((data) => {
-            console.log(data.length)
-        })
-    }
-    // return dbData[Math.floor(Math.random()*dbData.length)];
+    return new Promise((resolve, reject) => {
+        if (!dbData.length) {
+            initData().then((data) => {
+                resolve(dbData[Math.floor(Math.random()*dbData.length)]);
+            })
+        } else {
+            resolve(dbData[Math.floor(Math.random()*dbData.length)]);
+        }
+    })
 }
 
 
 // node 获取数据
 // var file = __dirname+'/db.json';
 // dbData = JSON.parse(fs.readFileSync(file));
-MongoClient.connect(url, function(err, _db) {
+MongoClient.connect(url, (err, _db) => {
     if (err) throw err;
     db = _db;
     ctx = _db.db("test");
     // insertMany(dbo, 'site', myobj, db);
     // initData()
-    randomWord()
+    randomWord().then((res) => {
+        console.log(res)
+    });
 });
 
 
