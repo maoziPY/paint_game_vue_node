@@ -279,7 +279,6 @@ const insertMany = () => {
             "tip": ""
         }
     ]
-    console.log(data)
     ctx.collection(collection).insertMany(data, function(err, res) {
         if (err) throw err;
         console.log("插入的文档数量为: " + res.insertedCount);
@@ -293,32 +292,14 @@ const initData = () => {
             resolve(result);
             dbData = result;
             if (err) reject(err);
-            db.close();
         });
     })
-    // ctx.collection(collection). find({}).toArray(function(err, result) { // 返回集合中所有数据
-    //     dbData = result;
-    //     if (err) throw err;
-    //     db.close();
-    // });
 }
 
 const randomWord = () => {
-    return new Promise((resolve, reject) => {
-        if (!dbData.length) {
-            initData().then((data) => {
-                resolve(dbData[Math.floor(Math.random()*dbData.length)]);
-            })
-        } else {
-            resolve(dbData[Math.floor(Math.random()*dbData.length)]);
-        }
-    })
+    return dbData[Math.floor(Math.random()*dbData.length)];
 }
 
-
-// node 获取数据
-// var file = __dirname+'/db.json';
-// dbData = JSON.parse(fs.readFileSync(file));
 MongoClient.connect(url, (err, _db) => {
     if (err) throw err;
     db = _db;
@@ -330,6 +311,7 @@ MongoClient.connect(url, (err, _db) => {
         } else {
             console.log(res.length)
         }
+        db.close();
     })
 });
 
