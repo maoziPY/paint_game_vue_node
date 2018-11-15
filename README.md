@@ -11,5 +11,7 @@
     开发：npm run server
     http://localhost:8080
 
+    --- dev1
+
 
     --- mogodb服务挂了
