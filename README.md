@@ -11,5 +11,7 @@
     开发：npm run server
     http://localhost:8080
 
+    -test
+
 
     ---接入D3js，生产模式.
