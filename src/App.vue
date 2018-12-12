@@ -485,7 +485,7 @@ export default {
           if(canvas.erase){
 
             var w=20,h=20;
-                // w>>>1相当于Math.ceil(w/2)，表示向上取整
+                // w>>>1相当于Math.floor(w/2)，表示除以2后再向下取整
                 var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
                 rect.clearOn(ctx);
                 this.$socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
