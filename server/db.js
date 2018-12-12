@@ -297,6 +297,8 @@ const db = (() => {
         })
     }
 
+    console.log('master1')
+
     const randomWord = () => {
         return dbData[Math.floor(Math.random()*dbData.length)];
     }
